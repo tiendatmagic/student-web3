@@ -268,6 +268,23 @@ export class Web3Service {
     }
   }
 
+  async deleteFunc(studentId: number) {
+    if (!studentId) return this.showModal('Error', 'Invalid studentId', 'error');
+    if (this.isLoading$.value) return;
+
+    try {
+      this.isLoading$.next(true);
+      const signer = await this.getSigner();
+      const tx = await this.contract!.connect(signer).deleteStudent(studentId);
+      const receipt = await tx.wait();
+      this.showModal('Success', `Remove successful! Tx: ${receipt.hash}`, 'success');
+    } catch (e: any) {
+      this.handleError(e, 'deleteStudent');
+    } finally {
+      this.isLoading$.next(false);
+    }
+  }
+
   showModal(title: string, message: string, status: string,
     showCloseBtn = true, disableClose = true, installMetamask = false) {
     this.dialog.closeAll();

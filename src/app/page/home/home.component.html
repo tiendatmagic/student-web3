@@ -14,38 +14,38 @@
     </thead>
     <tbody>
       <tr
-        class="hover:bg-[#a5a5a50d] border-b border-[#ececec] whitespace-nowrap"
+        class="hover:bg-[#a5a5a50d] border-b border-[#ececec]"
         *ngFor="let item of studentData"
         id="student-{{ item.id }}"
       >
         <ng-container>
-          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
-            <p class="max-w-[85px]">
+          <td class="px-2 py-4 text-gray-700">
+            <p class="">
               {{ item.studentId }}
             </p>
           </td>
-          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
-            <p class="max-w-[85px]">
+          <td class="px-2 py-4 text-gray-700 max-w-36">
+            <p class="line-clamp-2">
               {{ item.fullName }}
             </p>
           </td>
-          <td class="px-2 py-4 text-gray-700 whitespace-normal">
-            <p class="max-w-[85px]">
+          <td class="px-2 py-4 text-gray-700">
+            <p class="">
               {{ item.gender }}
             </p>
           </td>
-          <td class="px-2 py-4 text-gray-700 whitespace-normal">
-            <p class="max-w-[85px]">
+          <td class="px-2 py-4 text-gray-700">
+            <p class="">
               {{ item.dateOfBirth }}
             </p>
           </td>
-          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
-            <p class="max-w-[85px]">
+          <td class="px-2 py-4 text-gray-700 max-w-60">
+            <p class="line-clamp-3">
               {{ item.address }}
             </p>
           </td>
-          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
-            <div class="flex gap-3 max-w-[60px]">
+          <td class="px-2 py-4 text-gray-700">
+            <div class="flex gap-3">
               <button class="btn-primary" matRipple matRippleColor="#ffffff73">
                 Edit
               </button>
@@ -53,6 +53,7 @@
                 class="btn-outline-primary"
                 matRipple
                 matRippleColor="#ffffff73"
+                (click)="deleteStudent(item.id)"
               >
                 Delete
               </button>

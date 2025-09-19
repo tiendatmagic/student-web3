@@ -47,7 +47,7 @@ export class HomeComponent {
     }
   }
 
-  async getData(id: any, pageNumber = this.page) {
+  async getData(pageNumber = this.page) {
     var data: any = await this.web3Service.getDataFunc(pageNumber);
 
     if (!data || data.length === 0) {
@@ -68,6 +68,12 @@ export class HomeComponent {
 
     console.log("Student list:", this.studentData);
   }
+
+  async deleteStudent(id: number) {
+    await this.web3Service.deleteFunc(id);
+    await this.getData();
+  }
+
 
   test() {
     this.web3Service.checkInFunc(1);
