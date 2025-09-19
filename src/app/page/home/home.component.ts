@@ -18,7 +18,7 @@ export class HomeComponent {
   }
 
   async ngOnInit() {
-    var abc = await this.getData(this.id);
+    var abc = await this.getData();
   }
 
   async prevPage() {
@@ -27,10 +27,10 @@ export class HomeComponent {
     }
     if (this.page > 1) {
       this.page -= 1;
-      var data: any = await this.getData(this.id);
+      var data: any = await this.getData();
       if (!data?.length) {
         this.page--;
-        await this.getData(this.id);
+        await this.getData();
       }
     }
   }
@@ -44,16 +44,16 @@ export class HomeComponent {
 
     this.page += 1;
 
-    var data: any = await this.getData(this.id);
+    var data: any = await this.getData();
     if (!data?.length) {
       this.page--;
-      await this.getData(this.id);
+      await this.getData();
     }
   }
 
   async getData(pageNumber = this.page) {
     var data: any = await this.web3Service.getDataFunc(pageNumber);
-
+    console.log(data);
     if (!data || data.length === 0) {
       this.studentData = null;
       return;
@@ -64,9 +64,9 @@ export class HomeComponent {
         id: Number(item[0]),
         studentId: item[1],
         fullName: item[2],
-        gender: item[3] === "1" ? "Male" : "Female",
-        dateOfBirth: item[4],
-        address: item[5],
+        dateOfBirth: Number(item[3]),
+        gender: item[4],
+        permanentAddress: item[5],
       };
     });
 

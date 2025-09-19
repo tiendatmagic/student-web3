@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
   isConnected: boolean = false;
   selectedNetwork: string = '0x38';
   selectedNetworkImg: string = '';
-  selectedNetworkName: string = 'Arbitrum One';
+  selectedNetworkName: string = 'BSC Mainnet';
   // dropdownOpen: boolean = false;
   networks: any;
   lang: string = 'vi';
@@ -26,14 +26,14 @@ export class HeaderComponent implements OnInit {
     this.web3Service.chainId$.subscribe((networkId: any) => {
       this.selectedNetwork = networkId;
       this.selectedNetworkImg = this.web3Service.chainConfig[this.selectedNetwork]?.logo || '';
-      this.selectedNetworkName = this.web3Service.chainConfig[this.selectedNetwork]?.name || 'Unknown Network';
+      this.selectedNetworkName = this.web3Service.chainConfig[this.selectedNetwork]?.shortName || 'Unknown Network';
     });
   }
 
   ngOnInit(): void {
     this.networks = Object.keys(this.web3Service.chainConfig);
     this.selectedNetwork = this.web3Service.selectedChainId || this.networks[0];
-    this.selectedNetworkName = this.web3Service.chainConfig[this.selectedNetwork]?.name || 'Unknown Network';
+    this.selectedNetworkName = this.web3Service.chainConfig[this.selectedNetwork]?.shortName || 'Unknown Network';
 
     combineLatest([
       this.web3Service.account$,

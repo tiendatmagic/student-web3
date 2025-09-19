@@ -9,7 +9,7 @@
         <th scope="col" class="px-2 py-3 whitespace-nowrap">Gender</th>
         <th scope="col" class="px-2 py-3 whitespace-nowrap">Date of Birth</th>
         <th scope="col" class="px-2 py-3 whitespace-nowrap">Address</th>
-        <th scope="col" class="px-2 py-3 whitespace-nowrap"></th>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -31,17 +31,20 @@
           </td>
           <td class="px-2 py-4 text-gray-700">
             <p class="">
-              {{ item.gender }}
+              {{ item.gender ? "Male" : "Female" }}
             </p>
           </td>
           <td class="px-2 py-4 text-gray-700">
             <p class="">
-              {{ item.dateOfBirth }}
+              {{
+                item.dateOfBirth * 1000
+                  | date : "dd/MM/yyyy HH:mm:ss" : "Asia/Ho_Chi_Minh"
+              }}
             </p>
           </td>
           <td class="px-2 py-4 text-gray-700 max-w-60">
             <p class="line-clamp-3">
-              {{ item.address }}
+              {{ item.permanentAddress }}
             </p>
           </td>
           <td class="px-2 py-4 text-gray-700">

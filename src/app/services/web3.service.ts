@@ -40,6 +40,7 @@ export class Web3Service {
   public chainConfig: Record<string, {
     symbol: string;
     name: string;
+    shortName: string;
     logo: string;
     rpcUrls: string[];
     contractAddress: string;
@@ -48,16 +49,18 @@ export class Web3Service {
   }> = {
       '0x38': {
         symbol: 'BNB',
-        name: 'BSC Mainnet',
+        name: 'BNB Smart Chain',
+        shortName: 'BSC Mainnet',
         logo: '/assets/images/logo/bnb.png',
-        rpcUrls: ['https://bsc-mainnet.infura.io'],
+        rpcUrls: ['https://bsc-dataseed1.binance.org'],
         contractAddress: '0x0000000000000000000000000000000000000000',
         abi: StudentABI,
         blockExplorerUrls: ['https://bscscan.com'],
       },
       '0x61': {
-        symbol: 'BNB',
-        name: 'BSC Testnet',
+        symbol: 'tBNB',
+        name: 'BNB Smart Chain Testnet',
+        shortName: 'BSC Testnet',
         logo: '/assets/images/logo/bnb.png',
         rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
         contractAddress: '0xE60ca78c3F7de61E3A92dEc2aE937Ffb06294d39',
