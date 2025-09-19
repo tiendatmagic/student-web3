@@ -53,24 +53,10 @@ export class HomeComponent {
 
   async getData(pageNumber = this.page) {
     var data: any = await this.web3Service.getDataFunc(pageNumber);
-    console.log(data);
     if (!data || data.length === 0) {
       this.studentData = null;
       return;
     }
-
-    this.studentData = data.map((item: any) => {
-      return {
-        id: Number(item[0]),
-        studentId: item[1],
-        fullName: item[2],
-        dateOfBirth: Number(item[3]),
-        gender: item[4],
-        permanentAddress: item[5],
-      };
-    });
-
-    console.log("Student list:", this.studentData);
   }
 
   async deleteStudent(id: number) {

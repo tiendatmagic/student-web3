@@ -278,12 +278,19 @@ export class Web3Service {
   async getDataFunc(pageNumber: number = 1) {
     try {
       const data: any = await this.contract?.getAllStudents(pageNumber);
-      this.studentData = data;
+      this.studentData = data.map((item: any) => {
+        return {
+          id: Number(item[0]),
+          studentId: item[1],
+          fullName: item[2],
+          dateOfBirth: Number(item[3]),
+          gender: item[4],
+          permanentAddress: item[5],
+        };
+      });
       return data;
-
     } catch (e: any) {
       this.studentData = [];
-      console.error('Failed to get data list:', e);
       return [];
     }
   }
