@@ -11,7 +11,11 @@ export class HomeComponent {
   id: any;
   studentData: any;
   page: number = 1;
-  constructor(private web3Service: Web3Service) { }
+  constructor(private web3Service: Web3Service) {
+    this.web3Service.studentData$.subscribe((data: any) => {
+      this.studentData = data;
+    })
+  }
 
   async ngOnInit() {
     var abc = await this.getData(this.id);

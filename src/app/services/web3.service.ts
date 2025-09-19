@@ -20,6 +20,15 @@ export class Web3Service {
   private nativeSymbolSubject = new BehaviorSubject<string>('ETH');
   public isLoading$ = new BehaviorSubject<boolean>(false);
 
+  private studentDataSubject = new BehaviorSubject<any>(null);
+  public studentData$ = this.studentDataSubject.asObservable();
+  get studentData(): any {
+    return this.studentDataSubject.value;
+  }
+  set studentData(value: any) {
+    this.studentDataSubject.next(value);
+  }
+
   account$ = this.accountSubject.asObservable();
   balance$ = this.balanceSubject.asObservable();
   isConnected$ = this.isConnectedSubject.asObservable();
@@ -94,6 +103,12 @@ export class Web3Service {
         this.selectedChainId = formatted;
         localStorage.setItem('selectedChainId', formatted);
         await this.refreshConnection();
+        try {
+          const data = await this.getDataFunc(1);
+          console.log("Data reloaded after network change:", data);
+        } catch (err) {
+          console.error("Failed to reload data after network change:", err);
+        }
       });
     });
   }
@@ -260,9 +275,11 @@ export class Web3Service {
   async getDataFunc(pageNumber: number = 1) {
     try {
       const data: any = await this.contract?.getAllStudents(pageNumber);
+      this.studentData = data;
       return data;
 
     } catch (e: any) {
+      this.studentData = [];
       console.error('Failed to get data list:', e);
       return [];
     }
