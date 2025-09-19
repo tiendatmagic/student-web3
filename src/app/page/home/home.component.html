@@ -1,1 +1,121 @@
-<p>home works!</p>
+<div
+  class="rounded-xl w-full overflow-auto border-[#ececec] border-[1px] glass-effect not-bg-glass shadow-md relative max-w-screen-4xl mt-4 p-3"
+>
+  <table class="w-full text-sm text-left text-gray-600 rtl:text-right">
+    <thead class="text-xs text-gray-700 uppercase bg-[#f3f4f699]">
+      <tr>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap">Student ID</th>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap">Full Name</th>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap">Gender</th>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap">Date of Birth</th>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap">Address</th>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        class="hover:bg-[#a5a5a50d] border-b border-[#ececec] whitespace-nowrap"
+        *ngFor="let item of studentData"
+        id="student-{{ item.id }}"
+      >
+        <ng-container>
+          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
+            <p class="max-w-[85px]">
+              {{ item.studentId }}
+            </p>
+          </td>
+          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
+            <p class="max-w-[85px]">
+              {{ item.fullName }}
+            </p>
+          </td>
+          <td class="px-2 py-4 text-gray-700 whitespace-normal">
+            <p class="max-w-[85px]">
+              {{ item.gender }}
+            </p>
+          </td>
+          <td class="px-2 py-4 text-gray-700 whitespace-normal">
+            <p class="max-w-[85px]">
+              {{ item.dateOfBirth }}
+            </p>
+          </td>
+          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
+            <p class="max-w-[85px]">
+              {{ item.address }}
+            </p>
+          </td>
+          <td class="px-2 py-4 text-gray-700 whitespace-nowrap">
+            <div class="flex gap-3 max-w-[60px]">
+              <button class="btn-primary" matRipple matRippleColor="#ffffff73">
+                Edit
+              </button>
+              <button
+                class="btn-outline-primary"
+                matRipple
+                matRippleColor="#ffffff73"
+              >
+                Delete
+              </button>
+            </div>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-container>
+    <div class="flex flex-wrap justify-center gap-2 mt-3 sm:gap-3 pagination">
+      <button
+        class="w-12 h-12 rounded-full min-w-[auto] p-3 text-violet-700 border-2 focus:outline-none border-violet-600"
+        matRipple
+        matRippleColor="#ffffff73"
+        (click)="prevPage()"
+      >
+        <div class="flex items-center justify-center">
+          <svg
+            class="w-2.5 h-2.5 rtl:rotate-180"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 6 10"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 1 1 5l4 4"
+            />
+          </svg>
+        </div>
+      </button>
+      <button class="rounded-full min-w-12">
+        {{ page }}
+      </button>
+      <button
+        class="w-12 h-12 rounded-full min-w-[auto] p-3 text-violet-700 border-2 focus:outline-none border-violet-600"
+        matRipple
+        matRippleColor="#ffffff73"
+        (click)="nextPage()"
+      >
+        <div class="flex items-center justify-center">
+          <svg
+            class="w-2.5 h-2.5 rtl:rotate-180"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 6 10"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m1 9 4-4-4-4"
+            />
+          </svg>
+        </div>
+      </button>
+    </div>
+  </ng-container>
+</div>

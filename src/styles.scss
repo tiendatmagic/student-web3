@@ -46,3 +46,24 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+@layer components {
+  .btn-primary {
+    @apply bg-violet-700 px-4 py-3 active:disabled:scale-100 rounded-lg leading-5 text-sm text-white outline-none shadow-md min-w-20 transition-colors duration-200 bg-gradient-to-r from-purple-700 to-blue-600 disabled:bg-none disabled:shadow-none disabled:cursor-not-allowed;
+  }
+
+  .btn-outline-primary {
+    @apply border-violet-700 border-[1px] px-4 py-3 active:disabled:scale-100 rounded-lg leading-5 text-sm text-violet-700 outline-none min-w-20 transition-colors duration-200 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary-opacity {
+    @apply bg-violet-700 bg-opacity-50 min-w-20 transition-colors duration-200;
+  }
+  .btn-sm {
+    @apply text-sm px-2.5 py-1.5 rounded-md min-w-20 transition-colors duration-200;
+  }
+
+  .btn-lg {
+    @apply text-sm px-5 py-4 rounded-md min-w-20 transition-colors duration-200;
+  }
+}

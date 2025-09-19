@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
 import { BrowserProvider, Contract, formatEther, JsonRpcProvider } from 'ethers';
 import { NotifyModalComponent } from '../modal/notify-modal/notify-modal.component';
-import EventTicketABI from '../../assets/abi/EventTicketABI.json';
+import StudentABI from '../../assets/abi/StudentABI.json';
 
 declare let window: any;
 
@@ -41,9 +41,9 @@ export class Web3Service {
         symbol: 'BNB',
         name: 'BSC Mainnet',
         logo: '/assets/images/logo/bnb.png',
-        rpcUrls: ['bsc-mainnet.infura.io'],
+        rpcUrls: ['https://bsc-mainnet.infura.io'],
         contractAddress: '0x0000000000000000000000000000000000000000',
-        abi: EventTicketABI,
+        abi: StudentABI,
         blockExplorerUrls: ['https://bscscan.com'],
       },
       '0x61': {
@@ -51,8 +51,8 @@ export class Web3Service {
         name: 'BSC Testnet',
         logo: '/assets/images/logo/bnb.png',
         rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-        contractAddress: '0x0000000000000000000000000000000000000000',
-        abi: EventTicketABI,
+        contractAddress: '0xE60ca78c3F7de61E3A92dEc2aE937Ffb06294d39',
+        abi: StudentABI,
         blockExplorerUrls: ['https://testnet.bscscan.com'],
       },
     };
@@ -110,7 +110,6 @@ export class Web3Service {
       : new JsonRpcProvider(chain.rpcUrls[0]);
 
     this.contract = new Contract(chain.contractAddress, chain.abi, this.provider) as any;
-
     if (this.account) {
       await this.setAccount(this.account);
     }
@@ -256,6 +255,17 @@ export class Web3Service {
 
   private isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  async getDataFunc(pageNumber: number = 1) {
+    try {
+      const data: any = await this.contract?.getAllStudents(pageNumber);
+      return data;
+
+    } catch (e: any) {
+      console.error('Failed to get data list:', e);
+      return [];
+    }
   }
 
   showModal(title: string, message: string, status: string,
