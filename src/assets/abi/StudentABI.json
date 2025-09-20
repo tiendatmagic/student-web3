@@ -145,6 +145,12 @@
         "internalType": "string",
         "name": "fullName",
         "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
       }
     ],
     "name": "StudentAdded",
@@ -164,6 +170,12 @@
         "internalType": "string",
         "name": "studentId",
         "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "deleter",
+        "type": "address"
       }
     ],
     "name": "StudentDeleted",
@@ -189,6 +201,12 @@
         "internalType": "string",
         "name": "fullName",
         "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "updater",
+        "type": "address"
       }
     ],
     "name": "StudentUpdated",
@@ -385,6 +403,11 @@
             "internalType": "string",
             "name": "permanentAddress",
             "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
           }
         ],
         "internalType": "struct StudentManagement.Student[]",
@@ -467,6 +490,11 @@
             "internalType": "string",
             "name": "permanentAddress",
             "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
           }
         ],
         "internalType": "struct StudentManagement.Student[]",

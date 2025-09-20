@@ -63,7 +63,7 @@ export class Web3Service {
         shortName: 'BSC Testnet',
         logo: '/assets/images/logo/bnb.png',
         rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-        contractAddress: '0xE60ca78c3F7de61E3A92dEc2aE937Ffb06294d39',
+        contractAddress: '0x35613B592416CEc729DA3Dd8D06739D2757709fb',
         abi: StudentABI,
         blockExplorerUrls: ['https://testnet.bscscan.com'],
       },
@@ -278,6 +278,7 @@ export class Web3Service {
   async getDataFunc(pageNumber: number = 1) {
     try {
       const data: any = await this.contract?.getAllStudents(pageNumber);
+      console.log(data);
       this.studentData = data.map((item: any) => {
         return {
           id: Number(item[0]),
@@ -286,6 +287,7 @@ export class Web3Service {
           dateOfBirth: Number(item[3]),
           gender: item[4],
           permanentAddress: item[5],
+          creator: item[6],
         };
       });
       return data;

@@ -9,6 +9,7 @@
         <th scope="col" class="px-2 py-3 whitespace-nowrap">Gender</th>
         <th scope="col" class="px-2 py-3 whitespace-nowrap">Date of Birth</th>
         <th scope="col" class="px-2 py-3 whitespace-nowrap">Address</th>
+        <th scope="col" class="px-2 py-3 whitespace-nowrap">Creator</th>
         <th scope="col" class="px-2 py-3 whitespace-nowrap">Action</th>
       </tr>
     </thead>
@@ -45,6 +46,11 @@
           <td class="px-2 py-4 text-gray-700 max-w-60">
             <p class="line-clamp-3">
               {{ item.permanentAddress }}
+            </p>
+          </td>
+          <td class="px-2 py-4 text-gray-700 max-w-60">
+            <p class="break-all line-clamp-3">
+              {{ item.creator }}
             </p>
           </td>
           <td class="px-2 py-4 text-gray-700">
