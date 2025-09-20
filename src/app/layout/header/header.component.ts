@@ -52,6 +52,10 @@ export class HeaderComponent implements OnInit {
     initFlowbite();
   }
 
+  onLoadWeb() {
+    initFlowbite();
+  }
+
   connectWallet() {
     this.web3Service.connectWallet();
   }

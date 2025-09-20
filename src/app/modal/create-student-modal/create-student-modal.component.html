@@ -1,0 +1,188 @@
+<div mat-dialog-content>
+  <div class="relative h-10">
+    <p class="relative text-lg font-medium text-left font-robo top-[12px] px-5">
+      Create student
+    </p>
+    <div
+      class="absolute top-[10px] right-[10px] cursor-pointer w-10 h-10 flex items-center justify-center z-40 hover:bg-[#70707014] dark:hover:bg-[#a0aebc33] active:bg-[#70707014] dark:active:bg-[#a0aebc33] rounded-full p-2"
+      (click)="onNoClick()"
+    >
+      <mat-icon>close</mat-icon>
+    </div>
+  </div>
+</div>
+<div class="p-5 pt-0">
+  <div class="">
+    <form #eventForm="ngForm" (ngSubmit)="onCreate()">
+      <div class="relative w-full py-1">
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-6 md:flex-row">
+            <div class="w-full">
+              <label class="leading-6 inline-block text-[15px]">
+                Full Name
+              </label>
+              <input
+                autocomplete="on"
+                type="text"
+                class="w-full px-3 py-2 mt-2 mb-2 tracking-wider border-[1px] rounded-lg bg-white focus:ring-0 placeholder:text-gray-600 border-[#ececec] outline-none focus:border-violet-700"
+                placeholder="Enter full name"
+                name="fullName"
+                [(ngModel)]="fullName"
+                #fullNameInput="ngModel"
+                minlength="1"
+                maxlength="255"
+                required
+              />
+              <div
+                *ngIf="fullNameInput.invalid && fullNameInput.touched"
+                class="text-sm text-red-500"
+              >
+                <div *ngIf="fullNameInput.errors?.['required']">
+                  Full name is required
+                </div>
+                <div *ngIf="fullNameInput.errors?.['minlength']">
+                  Full name must be at least 1 character
+                </div>
+                <div *ngIf="fullNameInput.errors?.['maxlength']">
+                  Full name must be at most 255 characters
+                </div>
+              </div>
+            </div>
+
+            <div class="w-full">
+              <label class="leading-6 inline-block text-[15px]">
+                Student ID
+              </label>
+              <input
+                autocomplete="on"
+                type="text"
+                class="w-full px-3 py-2 mt-2 mb-2 tracking-wider border-[1px] rounded-lg bg-white focus:ring-0 placeholder:text-gray-600 border-[#ececec] outline-none focus:border-violet-700"
+                placeholder="Enter student ID"
+                name="studentID"
+                [(ngModel)]="studentID"
+                #studentIDInput="ngModel"
+                minlength="1"
+                maxlength="255"
+                required
+              />
+              <div
+                *ngIf="studentIDInput.invalid && studentIDInput.touched"
+                class="text-sm text-red-500"
+              >
+                <div *ngIf="studentIDInput.errors?.['required']">
+                  student ID is required
+                </div>
+                <div *ngIf="studentIDInput.errors?.['minlength']">
+                  student ID must be at least 1 character
+                </div>
+                <div *ngIf="studentIDInput.errors?.['maxlength']">
+                  student ID must be at most 255 characters
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-6 md:flex-row">
+            <div class="w-full">
+              <label class="leading-6 inline-block text-[15px]"> Gender </label>
+              <div
+                class="w-full px-3 py-0 mt-2 mb-2 border-[1px] rounded-lg bg-white focus:ring-0 border-[#ececec]"
+              >
+                <mat-radio-group [(ngModel)]="gender" name="gender" required>
+                  <mat-radio-button [value]="1" checked>Nam</mat-radio-button>
+                  <mat-radio-button [value]="0"> Nữ </mat-radio-button>
+                </mat-radio-group>
+              </div>
+
+              <div *ngIf="gender == null" class="text-sm text-red-500">
+                student ID is required
+              </div>
+            </div>
+            <div class="w-full">
+              <div class="flex flex-1 gap-3">
+                <div class="w-full">
+                  <label class="leading-6 inline-block text-[15px]">
+                    Date of Birth
+                  </label>
+                  <div>
+                    <input
+                      autocomplete="off"
+                      [matDatepicker]="DateOfBirthPicker"
+                      class="w-full px-3 py-2 mt-2 mb-2 tracking-wider border-[1px] rounded-lg bg-white focus:ring-0 placeholder:text-gray-600 border-[#ececec] outline-none focus:border-violet-700"
+                      placeholder="Enter date of birth"
+                      name="DateOfBirth"
+                      [(ngModel)]="DateOfBirth"
+                      #DateOfBirthInput="ngModel"
+                      required
+                      (click)="DateOfBirthPicker.open()"
+                    />
+                    <mat-datepicker #DateOfBirthPicker></mat-datepicker>
+                    <div
+                      *ngIf="
+                        DateOfBirthInput.invalid && DateOfBirthInput.touched
+                      "
+                      class="text-sm text-red-500"
+                    >
+                      <div *ngIf="DateOfBirthInput.errors?.['required']">
+                        Date of birth is required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-6 md:flex-row">
+            <div class="w-full">
+              <label class="leading-6 inline-block text-[15px]">
+                Address
+              </label>
+              <input
+                autocomplete="on"
+                type="text"
+                class="w-full px-3 py-2 mt-2 mb-2 tracking-wider border-[1px] rounded-lg bg-white focus:ring-0 placeholder:text-gray-600 border-[#ececec] outline-none focus:border-violet-700"
+                placeholder="Enter Address"
+                name="permanentAddress"
+                [(ngModel)]="permanentAddress"
+                #permanentAddressInput="ngModel"
+                minlength="1"
+                maxlength="255"
+                required
+              />
+              <div
+                *ngIf="
+                  permanentAddressInput.invalid && permanentAddressInput.touched
+                "
+                class="text-sm text-red-500"
+              >
+                <div *ngIf="permanentAddressInput.errors?.['required']">
+                  Address is required
+                </div>
+                <div *ngIf="permanentAddressInput.errors?.['minlength']">
+                  Address must be at least 1 character
+                </div>
+                <div *ngIf="permanentAddressInput.errors?.['maxlength']">
+                  Address must be at most 255 characters
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full mt-3">
+        <button
+          type="submit"
+          class="w-full btn-primary min-w-[120px]"
+          matRipple
+          matRippleColor="#ffffff73"
+        >
+          <div class="flex items-center justify-center gap-1">
+            <span class="text-md"> Create </span>
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

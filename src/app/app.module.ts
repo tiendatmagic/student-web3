@@ -18,6 +18,15 @@ import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/
 import { HomeComponent } from './page/home/home.component';
 import { ContactComponent } from './page/contact/contact.component';
 import { TutorialComponent } from './page/tutorial/tutorial.component';
+import { CreateStudentModalComponent } from './modal/create-student-modal/create-student-modal.component';
+import { CdkObserveContent } from "@angular/cdk/observers";
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTimepickerModule } from '@angular/material/timepicker';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { provideNativeDateAdapter } from '@angular/material/core';
+
 
 const globalRippleConfig: RippleGlobalOptions = {
   animation: {
@@ -35,7 +44,8 @@ const globalRippleConfig: RippleGlobalOptions = {
     NotifyModalComponent,
     HomeComponent,
     ContactComponent,
-    TutorialComponent
+    TutorialComponent,
+    CreateStudentModalComponent
   ],
   imports: [
     BrowserModule,
@@ -47,8 +57,15 @@ const globalRippleConfig: RippleGlobalOptions = {
     FormsModule,
     MatTabsModule,
     MatIconModule,
+    MatDatepickerModule,
+    MatTimepickerModule,
+    MatRadioModule,
+    CdkObserveContent,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [
+    provideNativeDateAdapter(),
     {
       provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: globalRippleConfig
     },

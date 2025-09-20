@@ -5,7 +5,7 @@
     class="flex items-center justify-between gap-2 mx-auto lg:gap-3 whitespace-nowrap"
   >
     <div class="flex gap-5 md:w-auto">
-      <div class="flex justify-between md:w-auto">
+      <div class="flex justify-between md:w-auto" (click)="onLoadWeb()">
         <a
           routerLink="/"
           class="flex items-center space-x-3 rtl:space-x-reverse"
@@ -252,7 +252,7 @@
 
       <button
         (click)="connectWallet()"
-        class="p-2 text-white rounded-lg lg:p-3 focus:border-0 focus:outline-none hover:bg-violet-700"
+        class="flex items-center gap-2 p-2 btn-primary lg:p-3"
         matRipple
         matRippleColor="#ffffff80"
         *ngIf="!isConnected"

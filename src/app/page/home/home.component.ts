@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Web3Service } from '../../services/web3.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateStudentModalComponent } from '../../modal/create-student-modal/create-student-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +13,7 @@ export class HomeComponent {
   id: any;
   studentData: any;
   page: number = 1;
-  constructor(private web3Service: Web3Service) {
+  constructor(private web3Service: Web3Service, public dialog: MatDialog) {
     this.web3Service.studentData$.subscribe((data: any) => {
       this.studentData = data;
     })
@@ -62,6 +64,14 @@ export class HomeComponent {
   async deleteStudent(id: number) {
     await this.web3Service.deleteFunc(id);
     await this.getData();
+  }
+
+  onCreate() {
+    this.dialog.closeAll();
+    this.dialog.open(CreateStudentModalComponent, {
+      width: '90%',
+      maxWidth: '1280px',
+    });
   }
 
 
