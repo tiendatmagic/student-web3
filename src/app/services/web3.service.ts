@@ -399,7 +399,7 @@ export class Web3Service {
       const signer = await this.getSigner();
       const tx = await this.contract!.connect(signer).updateStudent(id, studentId, fullName, dateOfBirth, gender, permanentAddress);
       const receipt = await tx.wait();
-      this.showModal('Success', `Add successful! Tx: ${receipt.hash}`, 'success');
+      this.showModal('Success', `Update successful! Tx: ${receipt.hash}`, 'success');
       await this.getDataFunc();
     } catch (e: any) {
       this.handleError(e, 'deleteStudent');
