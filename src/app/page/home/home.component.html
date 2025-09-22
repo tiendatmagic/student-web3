@@ -1,6 +1,16 @@
 <h2 class="text-2xl font-medium text-center uppercase">Student Management</h2>
 
-<div class="flex justify-end">
+<div class="flex justify-end gap-3">
+  <select
+    name="sortBy"
+    id=""
+    class="bg-gray-100 border-none rounded-lg outline-none select focus:border-0 focus:outline-none"
+    (change)="onSort($event)"
+  >
+    <option value="1" selected>Last</option>
+    <option value="0">First</option>
+  </select>
+
   <button
     class="btn-primary"
     matRipple
@@ -22,7 +32,7 @@
           d="M12 4.5v15m7.5-7.5h-15"
         />
       </svg>
-      <span>Thêm mới</span>
+      <span>Add Student</span>
     </div>
   </button>
 </div>
@@ -84,14 +94,19 @@
           </td>
           <td class="px-2 py-4 text-gray-700">
             <div class="flex gap-3">
-              <button class="btn-primary" matRipple matRippleColor="#ffffff73">
+              <button
+                class="btn-primary"
+                matRipple
+                matRippleColor="#ffffff73"
+                (click)="editStudent(item)"
+              >
                 Edit
               </button>
               <button
                 class="btn-outline-primary"
                 matRipple
                 matRippleColor="#ffffff73"
-                (click)="deleteStudent(item.id)"
+                (click)="deleteStudent(item)"
               >
                 Delete
               </button>

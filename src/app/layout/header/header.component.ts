@@ -21,12 +21,14 @@ export class HeaderComponent implements OnInit {
   // dropdownOpen: boolean = false;
   networks: any;
   lang: string = 'vi';
+  selectedExplorer: string = 'https://bscscan.io';
 
   constructor(public web3Service: Web3Service, private snackBar: MatSnackBar) {
     this.web3Service.chainId$.subscribe((networkId: any) => {
       this.selectedNetwork = networkId;
       this.selectedNetworkImg = this.web3Service.chainConfig[this.selectedNetwork]?.logo || '';
       this.selectedNetworkName = this.web3Service.chainConfig[this.selectedNetwork]?.shortName || 'Unknown Network';
+      this.selectedExplorer = this.web3Service.chainConfig[this.selectedNetwork]?.blockExplorerUrls;
     });
   }
 

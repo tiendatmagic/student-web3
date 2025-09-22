@@ -9,7 +9,8 @@ declare let window: any;
 
 @Injectable({ providedIn: 'root' })
 export class Web3Service {
-  private provider: BrowserProvider | JsonRpcProvider | null = null;
+  private readProvider: JsonRpcProvider | null = null;
+  private provider: BrowserProvider | null = null;
   private signer: any = null;
   private contract: any;
 
@@ -45,7 +46,7 @@ export class Web3Service {
     rpcUrls: string[];
     contractAddress: string;
     abi: any;
-    blockExplorerUrls?: string[];
+    blockExplorerUrls?: any;
   }> = {
       '0x38': {
         symbol: 'BNB',
@@ -63,7 +64,7 @@ export class Web3Service {
         shortName: 'BSC Testnet',
         logo: '/assets/images/logo/bnb.png',
         rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-        contractAddress: '0x35613B592416CEc729DA3Dd8D06739D2757709fb',
+        contractAddress: '0x3b9d96B1Cde75A5dA786823De14d18dC46133b53',
         abi: StudentABI,
         blockExplorerUrls: ['https://testnet.bscscan.com'],
       },
@@ -79,12 +80,29 @@ export class Web3Service {
 
     if (typeof window.ethereum !== 'undefined') {
       this.listenWalletEvents();
-      const accounts = await this.provider!.send('eth_accounts', []);
-      if (accounts.length > 0) {
-        await this.setAccount(accounts[0]);
+      this.provider = new BrowserProvider(window.ethereum);
+      try {
+        const network = await this.provider.getNetwork();
+        const actualChainId = '0x' + network.chainId.toString(16).toLowerCase();
+        if (this.chainConfig[actualChainId]) {
+          this.selectedChainId = actualChainId;
+          localStorage.setItem('selectedChainId', actualChainId);
+          await this.refreshConnection();
+        }
+      } catch (e: any) {
+        console.warn('Failed to fetch MetaMask network:', e.message);
+      }
+
+      try {
+        const accounts = await this.provider.send('eth_accounts', []);
+        if (accounts.length > 0) {
+          await this.setAccount(accounts[0]);
+        }
+      } catch (e: any) {
+        console.warn('Failed to fetch MetaMask accounts:', e.message);
       }
     } else {
-      console.warn('MetaMask is not installed, using RPC provider.');
+      console.warn('MetaMask is not installed, using RPC provider for reads.');
     }
   }
 
@@ -99,7 +117,7 @@ export class Web3Service {
       this.ngZone.run(async () => {
         const formatted = chainId.toLowerCase();
         if (!this.chainConfig[formatted]) {
-          this.showModal('Warning', 'The network you selected is not supported. Please switch to a supported network.', 'error');
+          this.showModal('Error', 'The network you selected is not supported. Please switch to a supported network.', 'error');
           this.disconnectWallet();
           return;
         }
@@ -107,7 +125,7 @@ export class Web3Service {
         localStorage.setItem('selectedChainId', formatted);
         await this.refreshConnection();
         try {
-          const data = await this.getDataFunc(1);
+          const data = await this.getDataFunc(1, 1);
           console.log("Data reloaded after network change:", data);
         } catch (err) {
           console.error("Failed to reload data after network change:", err);
@@ -118,16 +136,21 @@ export class Web3Service {
 
   private async refreshConnection() {
     const chain = this.chainConfig[this.selectedChainId];
-    if (!chain) return;
+    if (!chain) {
+      console.error(`No chain config for chainId: ${this.selectedChainId}`);
+      return;
+    }
 
     this.chainIdSubject.next(this.selectedChainId);
     this.nativeSymbolSubject.next(chain.symbol);
 
-    this.provider = typeof window.ethereum !== 'undefined'
-      ? new BrowserProvider(window.ethereum)
-      : new JsonRpcProvider(chain.rpcUrls[0]);
+    try {
+      this.readProvider = new JsonRpcProvider(chain.rpcUrls[0]);
+      this.contract = new Contract(chain.contractAddress, chain.abi, this.readProvider) as any;
+    } catch (e: any) {
+      console.error('Failed to initialize readProvider or contract:', e.message);
+    }
 
-    this.contract = new Contract(chain.contractAddress, chain.abi, this.provider) as any;
     if (this.account) {
       await this.setAccount(this.account);
     }
@@ -138,7 +161,15 @@ export class Web3Service {
   }
 
   private async getSigner() {
-    if (!this.signer && this.provider) {
+    if (!this.provider) {
+      throw new Error('No wallet connected. Please connect your wallet.');
+    }
+    const network = await this.provider.getNetwork();
+    const actualChainId = '0x' + network.chainId.toString(16).toLowerCase();
+    if (actualChainId !== this.selectedChainId) {
+      throw new Error(`Wallet is on the wrong network. Please switch to ${this.chainConfig[this.selectedChainId].name}.`);
+    }
+    if (!this.signer) {
       this.signer = await this.provider.getSigner();
     }
     return this.signer;
@@ -150,11 +181,23 @@ export class Web3Service {
       return false;
     }
     try {
-      await this.refreshConnection();
-      const accounts = await this.provider!.send('eth_requestAccounts', []);
+      this.provider = new BrowserProvider(window.ethereum);
+      const accounts = await this.provider.send('eth_requestAccounts', []);
       if (!accounts.length) throw new Error('No account found');
+
+      const network = await this.provider.getNetwork();
+      const actualChainId = '0x' + network.chainId.toString(16).toLowerCase();
+      if (this.chainConfig[actualChainId] && actualChainId !== this.selectedChainId) {
+        this.selectedChainId = actualChainId;
+        localStorage.setItem('selectedChainId', actualChainId);
+      }
+
+      await this.refreshConnection();
       await this.setAccount(accounts[0]);
-      await this.switchNetwork(this.selectedChainId);
+
+      if (actualChainId !== this.selectedChainId) {
+        await this.switchNetwork(this.selectedChainId);
+      }
       return true;
     } catch (e: any) {
       this.handleError(e, 'connectWallet');
@@ -173,15 +216,18 @@ export class Web3Service {
     this.balanceSubject.next('0');
     this.isConnectedSubject.next(false);
     this.signer = null;
-    this.contract = null;
     this.provider = null;
   }
 
   private async getBalance(account: string) {
     try {
-      const balance = await this.provider!.getBalance(account);
+      if (!this.readProvider) {
+        throw new Error('readProvider is not initialized');
+      }
+      const balance = await this.readProvider.getBalance(account);
       this.balanceSubject.next(formatEther(balance));
     } catch (e: any) {
+      console.error(`Error in getBalance for account ${account}:`, e.message);
       this.handleError(e, 'getBalance');
     }
   }
@@ -220,6 +266,15 @@ export class Web3Service {
     this.chainIdSubject.next(formatted);
     localStorage.setItem('selectedChainId', formatted);
 
+    await this.refreshConnection();
+
+    try {
+      const data = await this.getDataFunc(1, 1);
+    } catch (err) {
+      console.error('Failed to load data for chain', formatted, ':', err);
+      this.showModal('Error', 'Failed to load data for the selected network.', 'error');
+    }
+
     if (typeof window.ethereum !== 'undefined') {
       try {
         await window.ethereum.request({
@@ -229,27 +284,31 @@ export class Web3Service {
       } catch (switchError: any) {
         if (switchError.code === 4902) {
           const net = this.chainConfig[formatted];
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: formatted,
-              chainName: net.name,
-              nativeCurrency: { name: net.symbol, symbol: net.symbol, decimals: 18 },
-              rpcUrls: net.rpcUrls,
-              blockExplorerUrls: net.blockExplorerUrls || [],
-            }],
-          });
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: formatted }],
-          });
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: formatted,
+                chainName: net.name,
+                nativeCurrency: { name: net.symbol, symbol: net.symbol, decimals: 18 },
+                rpcUrls: net.rpcUrls,
+                blockExplorerUrls: net.blockExplorerUrls || [],
+              }],
+            });
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: formatted }],
+            });
+          } catch (addError: any) {
+            console.warn('User rejected adding network, but read operations will use selected chain:', formatted);
+            this.showModal('Error', 'You rejected adding the network. Data has been loaded, but transactions may fail if the wallet network doesn’t match.', 'warning');
+          }
         } else {
-          throw switchError;
+          console.warn('Network switch failed, but read operations will use selected chain:', formatted);
+          this.showModal('Error', 'Failed to switch network. Data has been loaded, but transactions may fail if the wallet network doesn’t match.', 'error');
         }
       }
     }
-
-    await this.refreshConnection();
   }
 
   private handleNoMetamask() {
@@ -261,7 +320,6 @@ export class Web3Service {
   }
 
   private handleError(error: any, context: string) {
-
     if (error.code === 'ACTION_REJECTED') {
       this.showModal('Error', 'User rejected request.', 'error');
     } else if (error.code === 'NETWORK_ERROR') {
@@ -275,10 +333,9 @@ export class Web3Service {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
-  async getDataFunc(pageNumber: number = 1) {
+  async getDataFunc(pageNumber: number = 1, sort: number = 1) {
     try {
-      const data: any = await this.contract?.getAllStudents(pageNumber);
-      console.log(data);
+      const data: any = await this.contract?.getAllStudents(pageNumber, Number(sort));
       this.studentData = data.map((item: any) => {
         return {
           id: Number(item[0]),
@@ -307,6 +364,43 @@ export class Web3Service {
       const tx = await this.contract!.connect(signer).deleteStudent(studentId);
       const receipt = await tx.wait();
       this.showModal('Success', `Remove successful! Tx: ${receipt.hash}`, 'success');
+      await this.getDataFunc();
+    } catch (e: any) {
+      this.handleError(e, 'deleteStudent');
+    } finally {
+      this.isLoading$.next(false);
+    }
+  }
+
+  async addStudentFunc(studentId: string, fullName: string, dateOfBirth: any, gender: string, permanentAddress: string) {
+    if (!studentId) return this.showModal('Error', 'Invalid studentId', 'error');
+    if (this.isLoading$.value) return;
+
+    try {
+      this.isLoading$.next(true);
+      const signer = await this.getSigner();
+      const tx = await this.contract!.connect(signer).addStudent(studentId, fullName, dateOfBirth, gender, permanentAddress);
+      const receipt = await tx.wait();
+      this.showModal('Success', `Add successful! Tx: ${receipt.hash}`, 'success');
+      await this.getDataFunc();
+    } catch (e: any) {
+      this.handleError(e, 'deleteStudent');
+    } finally {
+      this.isLoading$.next(false);
+    }
+  }
+
+  async updateStudentFunc(id: string, studentId: string, fullName: string, dateOfBirth: any, gender: string, permanentAddress: string) {
+    if (!studentId) return this.showModal('Error', 'Invalid studentId', 'error');
+    if (this.isLoading$.value) return;
+
+    try {
+      this.isLoading$.next(true);
+      const signer = await this.getSigner();
+      const tx = await this.contract!.connect(signer).updateStudent(id, studentId, fullName, dateOfBirth, gender, permanentAddress);
+      const receipt = await tx.wait();
+      this.showModal('Success', `Add successful! Tx: ${receipt.hash}`, 'success');
+      await this.getDataFunc();
     } catch (e: any) {
       this.handleError(e, 'deleteStudent');
     } finally {

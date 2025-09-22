@@ -1,0 +1,53 @@
+<div mat-dialog-content>
+  <div class="relative h-14">
+    <p class="relative text-lg font-medium text-left font-robo top-[12px] px-5">
+      Delete student
+    </p>
+    <div
+      class="absolute top-[10px] right-[10px] cursor-pointer w-10 h-10 flex items-center justify-center z-40 hover:bg-[#70707014] dark:hover:bg-[#a0aebc33] active:bg-[#70707014] dark:active:bg-[#a0aebc33] rounded-full p-2"
+      (click)="onNoClick()"
+    >
+      <mat-icon>close</mat-icon>
+    </div>
+  </div>
+</div>
+<div class="p-5 pt-0">
+  <div class="">
+    <p>Are you sure you want to delete this student?</p>
+
+    <div class="mt-3">
+      <p class="m-0 font-medium">
+        Student ID: <span class="text-violet-700">{{ datas.studentId }}</span>
+      </p>
+      <p class="m-0 font-medium">
+        Name: <span class="text-violet-700">{{ datas.fullName }}</span>
+      </p>
+    </div>
+
+    <div class="flex w-full gap-3 mt-3">
+      <button
+        type="submit"
+        class="w-full btn-outline-primary min-w-[120px]"
+        matRipple
+        matRippleColor="#ffffff73"
+        (click)="onNoClick()"
+      >
+        <div class="flex items-center justify-center gap-1">
+          <span class="text-md"> No </span>
+        </div>
+      </button>
+
+      <button
+        type="submit"
+        class="w-full btn-primary min-w-[120px]"
+        matRipple
+        matRippleColor="#ffffff73"
+        (click)="onDelete()"
+      >
+        <div class="flex items-center justify-center gap-1">
+          <span class="text-md"> Delete </span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>

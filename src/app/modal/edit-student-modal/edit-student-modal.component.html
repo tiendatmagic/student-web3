@@ -1,7 +1,7 @@
 <div mat-dialog-content>
   <div class="relative h-14">
     <p class="relative text-lg font-medium text-left font-robo top-[12px] px-5">
-      Create student
+      Edit student
     </p>
     <div
       class="absolute top-[10px] right-[10px] cursor-pointer w-10 h-10 flex items-center justify-center z-40 hover:bg-[#70707014] dark:hover:bg-[#a0aebc33] active:bg-[#70707014] dark:active:bg-[#a0aebc33] rounded-full p-2"
@@ -13,7 +13,7 @@
 </div>
 <div class="p-5 pt-0">
   <div class="">
-    <form #eventForm="ngForm" (ngSubmit)="onCreate()">
+    <form #eventForm="ngForm" (ngSubmit)="onEdit()">
       <div class="relative w-full py-1">
         <div class="flex flex-col gap-3">
           <div class="flex flex-col gap-6 md:flex-row">
@@ -174,12 +174,14 @@
       <div class="w-full mt-3">
         <button
           type="submit"
-          class="w-full btn-primary min-w-[120px]"
+          class="w-full btn-primary min-w-[120px] disabled:opacity-50"
           matRipple
           matRippleColor="#ffffff73"
+          [disabled]="!isCreator"
         >
           <div class="flex items-center justify-center gap-1">
-            <span class="text-md"> Create </span>
+            <span class="text-md" *ngIf="isCreator"> Update </span>
+            <span class="text-md" *ngIf="!isCreator"> You not creator </span>
           </div>
         </button>
       </div>

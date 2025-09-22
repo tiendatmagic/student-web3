@@ -26,6 +26,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { EditStudentModalComponent } from './modal/edit-student-modal/edit-student-modal.component';
+import { DatePipe } from '@angular/common';
+import { DeleteStudentModalComponent } from './modal/delete-student-modal/delete-student-modal.component';
+
 
 
 const globalRippleConfig: RippleGlobalOptions = {
@@ -45,7 +49,9 @@ const globalRippleConfig: RippleGlobalOptions = {
     HomeComponent,
     ContactComponent,
     TutorialComponent,
-    CreateStudentModalComponent
+    CreateStudentModalComponent,
+    EditStudentModalComponent,
+    DeleteStudentModalComponent
   ],
   imports: [
     BrowserModule,
@@ -62,9 +68,9 @@ const globalRippleConfig: RippleGlobalOptions = {
     MatRadioModule,
     CdkObserveContent,
     MatFormFieldModule,
-    MatInputModule,
+    MatInputModule
   ],
-  providers: [
+  providers: [DatePipe,
     provideNativeDateAdapter(),
     {
       provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: globalRippleConfig
