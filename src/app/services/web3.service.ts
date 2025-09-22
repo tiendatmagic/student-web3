@@ -54,7 +54,7 @@ export class Web3Service {
         shortName: 'BSC Mainnet',
         logo: '/assets/images/logo/bnb.png',
         rpcUrls: ['https://bsc-dataseed1.binance.org'],
-        contractAddress: '0x0000000000000000000000000000000000000000',
+        contractAddress: '0xad666f16768abC21b93B2Af72B1724B2774515Aa',
         abi: StudentABI,
         blockExplorerUrls: ['https://bscscan.com'],
       },
