@@ -80,43 +80,39 @@ export class Web3Service {
     return keys.length ? keys[0].toLowerCase() : '';
   }
   private async initEthers() {
-
-    const isUnsupported = localStorage.getItem('unsupportedNetwork') === 'true';
-    if (isUnsupported) {
-      console.warn('User is on unsupported network, wallet will not auto-connect.');
-      this.disconnectWallet();
-
-      this.selectedChainId = this.getDefaultChainId();
-      await this.refreshConnection();
-      return;
-    }
-
-    let savedChain = localStorage.getItem('selectedChainId');
-    if (!savedChain || !this.chainConfig[savedChain.toLowerCase()]) {
-      savedChain = this.getDefaultChainId();
-      localStorage.setItem('selectedChainId', savedChain);
-    }
+    let savedChain = localStorage.getItem('selectedChainId') || this.getDefaultChainId();
     this.selectedChainId = savedChain.toLowerCase();
-    await this.refreshConnection();
 
     if (typeof window.ethereum !== 'undefined') {
       this.listenWalletEvents();
       this.provider = new BrowserProvider(window.ethereum);
+
       try {
         const network = await this.provider.getNetwork();
         const actualChainId = '0x' + network.chainId.toString(16).toLowerCase();
-        if (this.chainConfig[actualChainId]) {
-          this.selectedChainId = actualChainId;
-          localStorage.setItem('selectedChainId', actualChainId);
-          await this.refreshConnection();
+
+        if (!this.chainConfig[actualChainId]) {
+          console.warn('Network not supported. Wallet will not auto-connect.');
+          this.disconnectWallet();
+          localStorage.setItem('unsupportedNetwork', 'true');
+          this.selectedChainId = this.getDefaultChainId();
+          await this.refreshConnection(true);
+          return;
+        } else {
+          localStorage.removeItem('unsupportedNetwork');
         }
+
+        this.selectedChainId = actualChainId;
+        localStorage.setItem('selectedChainId', actualChainId);
+        await this.refreshConnection(false);
       } catch (e: any) {
         console.warn('Failed to fetch MetaMask network:', e.message);
+        await this.refreshConnection(true);
       }
 
       try {
         const accounts = await this.provider.send('eth_accounts', []);
-        if (accounts.length > 0) {
+        if (accounts.length > 0 && !localStorage.getItem('unsupportedNetwork')) {
           await this.setAccount(accounts[0]);
         }
       } catch (e: any) {
@@ -124,6 +120,7 @@ export class Web3Service {
       }
     } else {
       console.warn('MetaMask is not installed, using RPC provider for reads.');
+      await this.refreshConnection(true);
     }
   }
 
@@ -150,13 +147,12 @@ export class Web3Service {
         }
 
         localStorage.removeItem('unsupportedNetwork');
-
         this.selectedChainId = formatted;
         localStorage.setItem('selectedChainId', formatted);
         await this.refreshConnection();
 
         try {
-          const data = await this.getDataFunc(1, 1);
+          const data = await this.getDataFunc(1);
         } catch (err) {
           console.error("Failed to reload data after network change:", err);
         }
@@ -164,7 +160,7 @@ export class Web3Service {
     });
   }
 
-  private async refreshConnection() {
+  private async refreshConnection(readOnly: boolean = false) {
     const chain = this.chainConfig[this.selectedChainId];
     if (!chain) {
       console.error(`No chain config for chainId: ${this.selectedChainId}`);
@@ -178,12 +174,12 @@ export class Web3Service {
 
     try {
       this.readProvider = new JsonRpcProvider(chain.rpcUrls[0]);
-      this.contract = new Contract(chain.contractAddress, chain.abi, this.readProvider) as any;
+      this.contract = new Contract(chain.contractAddress, chain.abi, this.readProvider);
     } catch (e: any) {
       console.error('Failed to initialize readProvider or contract:', e.message);
     }
 
-    if (this.account) {
+    if (!readOnly && this.account) {
       await this.setAccount(this.account);
     }
   }
@@ -223,12 +219,13 @@ export class Web3Service {
         this.selectedChainId = actualChainId;
         localStorage.setItem('selectedChainId', actualChainId);
       }
-
+      localStorage.removeItem('unsupportedNetwork');
       await this.refreshConnection();
       await this.setAccount(accounts[0]);
 
       if (actualChainId !== this.selectedChainId) {
         await this.switchNetwork(this.selectedChainId);
+        this.provider = new BrowserProvider(window.ethereum);
       }
       return true;
     } catch (e: any) {
@@ -299,7 +296,7 @@ export class Web3Service {
     localStorage.setItem('selectedChainId', formatted);
     await this.refreshConnection();
     try {
-      const data = await this.getDataFunc(1, 1);
+      const data = await this.getDataFunc(1);
     } catch (err) {
       console.error('Failed to load data for chain', formatted, ':', err);
       this.showModal('Error', 'Failed to load data for the selected network.', 'error');
