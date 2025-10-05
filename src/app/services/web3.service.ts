@@ -17,7 +17,7 @@ export class Web3Service {
   private accountSubject = new BehaviorSubject<string>('');
   private balanceSubject = new BehaviorSubject<string>('0');
   private isConnectedSubject = new BehaviorSubject<boolean>(false);
-  private chainIdSubject = new BehaviorSubject<string>('0x38');
+  private chainIdSubject = new BehaviorSubject<string>('');
   private nativeSymbolSubject = new BehaviorSubject<string>('ETH');
   public isLoading$ = new BehaviorSubject<boolean>(false);
 
@@ -36,7 +36,7 @@ export class Web3Service {
   chainId$ = this.chainIdSubject.asObservable();
   nativeSymbol$ = this.nativeSymbolSubject.asObservable();
 
-  selectedChainId = '0x38';
+  selectedChainId = '';
 
   public chainConfig: Record<string, {
     symbol: string;
@@ -74,8 +74,29 @@ export class Web3Service {
     this.initEthers();
   }
 
+
+  private getDefaultChainId(): string {
+    const keys = Object.keys(this.chainConfig);
+    return keys.length ? keys[0].toLowerCase() : '';
+  }
   private async initEthers() {
-    this.selectedChainId = localStorage.getItem('selectedChainId') || '0x38';
+
+    const isUnsupported = localStorage.getItem('unsupportedNetwork') === 'true';
+    if (isUnsupported) {
+      console.warn('User is on unsupported network, wallet will not auto-connect.');
+      this.disconnectWallet();
+
+      this.selectedChainId = this.getDefaultChainId();
+      await this.refreshConnection();
+      return;
+    }
+
+    let savedChain = localStorage.getItem('selectedChainId');
+    if (!savedChain || !this.chainConfig[savedChain.toLowerCase()]) {
+      savedChain = this.getDefaultChainId();
+      localStorage.setItem('selectedChainId', savedChain);
+    }
+    this.selectedChainId = savedChain.toLowerCase();
     await this.refreshConnection();
 
     if (typeof window.ethereum !== 'undefined') {
@@ -117,16 +138,25 @@ export class Web3Service {
       this.ngZone.run(async () => {
         const formatted = chainId.toLowerCase();
         if (!this.chainConfig[formatted]) {
-          this.showModal('Error', 'The network you selected is not supported. Please switch to a supported network.', 'error');
+          this.showModal(
+            'Warning',
+            'The network you selected is not supported. Please switch to a supported network.',
+            'error'
+          );
           this.disconnectWallet();
+          localStorage.setItem('unsupportedNetwork', 'true');
+
           return;
         }
+
+        localStorage.removeItem('unsupportedNetwork');
+
         this.selectedChainId = formatted;
         localStorage.setItem('selectedChainId', formatted);
         await this.refreshConnection();
+
         try {
           const data = await this.getDataFunc(1, 1);
-          console.log("Data reloaded after network change:", data);
         } catch (err) {
           console.error("Failed to reload data after network change:", err);
         }
@@ -138,6 +168,8 @@ export class Web3Service {
     const chain = this.chainConfig[this.selectedChainId];
     if (!chain) {
       console.error(`No chain config for chainId: ${this.selectedChainId}`);
+      this.readProvider = null;
+      this.contract = null;
       return;
     }
 
@@ -265,9 +297,7 @@ export class Web3Service {
     this.selectedChainId = formatted;
     this.chainIdSubject.next(formatted);
     localStorage.setItem('selectedChainId', formatted);
-
     await this.refreshConnection();
-
     try {
       const data = await this.getDataFunc(1, 1);
     } catch (err) {
@@ -301,7 +331,7 @@ export class Web3Service {
             });
           } catch (addError: any) {
             console.warn('User rejected adding network, but read operations will use selected chain:', formatted);
-            this.showModal('Error', 'You rejected adding the network. Data has been loaded, but transactions may fail if the wallet network doesn’t match.', 'warning');
+            this.showModal('Warning', 'You rejected adding the network. Data has been loaded, but transactions may fail if the wallet network doesn’t match.', 'error');
           }
         } else {
           console.warn('Network switch failed, but read operations will use selected chain:', formatted);

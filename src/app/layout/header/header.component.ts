@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
   balance: any;
   nativeSymbol: string = '';
   isConnected: boolean = false;
-  selectedNetwork: string = '0x38';
+  selectedNetwork: string = '';
   selectedNetworkImg: string = '';
   selectedNetworkName: string = 'BSC Mainnet';
   // dropdownOpen: boolean = false;
